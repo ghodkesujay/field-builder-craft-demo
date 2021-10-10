@@ -1,14 +1,7 @@
-import React, { Component } from "react"; 
-import { useState } from "react";
-//import "bootstrap/dist/css/bootstrap.min.css"; //for bootstrap elements
-import { useForm } from 'react-hook-form'; //react hook form validations
-import { yupResolver } from '@hookform/resolvers/yup'; //yup resolver
-import * as Yup from 'yup'; //everything from yup schema validation library for form validation rules
-import logo from './logo.svg';
+import React from "react"; 
 import './App.css';
 import ListItems from "./ListItems";
 import FieldService from "./MockService";
-import { boolean } from "yup/lib/locale";
 import PostService from "./PostService";
 
 class App extends React.Component {
@@ -43,6 +36,7 @@ class App extends React.Component {
     this.checkIfContains = this.checkIfContains.bind(this);
     this.handleDefaultSubmit = this.handleDefaultSubmit.bind(this);
     this.onChangeChecked = this.onChangeChecked.bind(this);
+    this.clearAllFields = this.clearAllFields.bind(this);
   }
 
   handleInput(e) {
@@ -92,7 +86,7 @@ class App extends React.Component {
     console.log("AddItem new item inserted:", newItem);
     if( newItem.text !== "" && !this.checkIfContains(newItem) && this.state.items.length < 50) {
       console.log("Entered here");
-      const newItems = [...this.state.items, newItem];
+      const newItems = [...this.state.items, newItem]; //used spread operator to append the additional item to items array
       console.log("New Items is:", newItems, this.state.items);
       if(this.state.defaultFlag){
         this.setState({ items:newItems }, function () { console.log("Immediately after setting state: ", this.state.items)
@@ -105,14 +99,13 @@ class App extends React.Component {
       else{
         this.setState({
           items:newItems 
-          // currentItem: {
-          //   text: "",
-          //   key:''
-          // }
         });
       }
       
       console.log("After adding:", this.state.items);
+    }
+    else {
+      alert("Some or All fields in the form are empty");
     }
     
   }
@@ -156,21 +149,16 @@ class App extends React.Component {
         required: "false"
       });
     }
-    //console.log(this.state)
   }
 
-
-  // componentDidMount() {
-  //   // Simple POST request with a JSON body using fetch
-  //   const requestOptions = {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ title: 'React POST Request Example' })
-  //   };
-  //   fetch('https://reqres.in/api/posts', requestOptions)
-  //       .then(response => response.json())
-  //       .then(data => this.setState({ postId: data.id }));
-  // }
+  clearAllFields() {
+    document.getElementById("fieldForm").reset();
+    this.setState({
+      required: '',
+      defaultItem: '',
+      currentItem: ''
+    })
+  }
 
   render() {
 
@@ -229,7 +217,9 @@ class App extends React.Component {
           
             <button type = "submit" value = {this.state.defaultItem.text} 
                 onClick = { this.handleDefaultSubmit }
-              >Save changes</button> Or <button type = "button">Cancel</button>
+              >Save changes</button> Or 
+            
+            <button type = "button" onClick = { this.clearAllFields } >Cancel</button>
 
           </form>
         </header>
